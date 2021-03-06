@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">MyShoppingApp</string>
+    <string-array name="sort_array">
+        <item>default sort</item>
+        <item>A-Z</item>
+        <item>Z-A</item>
+        <item>Highest Price</item>
+        <item>Lowest Price</item>
+    </string-array>
+    <string name="action_settings">Log Out</string>
+    <string name="guest_login_button_text">Log In as Guest</string>
+    <string name="create_account_button_text">Create Account</string>
+    <string name="login_button_text">Log In</string>
+    <string name="mainTitle" />
+</resources>
