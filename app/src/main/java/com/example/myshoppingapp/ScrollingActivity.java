@@ -9,7 +9,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -60,6 +59,17 @@ public class ScrollingActivity extends AppCompatActivity {
 
         }
 
+        //make sure the history file for the user exists
+        File historyFile = new File(getBaseContext().getFilesDir(), curUser+".txt");
+        try {
+            if (historyFile.createNewFile()) {
+                FileWriter fileWriter = new FileWriter(historyFile);
+                fileWriter.close();
+            }
+        } catch (IOException e) {
+
+        }
+
         // init the database of items
         itemDatabase = databaseManager.getDatabase(context);
         ShopItemDAO shopItemDAO = itemDatabase.shopItemDAO();
@@ -80,6 +90,9 @@ public class ScrollingActivity extends AppCompatActivity {
         // init the cart and set the starting money for the user
         Cart.InitCart(curUser, moneyFile);
         curMoney.setText("$" + Cart.getMoney());
+
+        //init the history manager to keep track of transactions
+        HistoryManager.Init(curUser, historyFile);
 
         // create the searchbar
         EditText searchBar = findViewById(R.id.search_bar);
@@ -155,5 +168,6 @@ public class ScrollingActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         Cart.shutdownCart(new File(getBaseContext().getFilesDir(), "money.txt"));
+        HistoryManager.saveHistory();
     }
 }
