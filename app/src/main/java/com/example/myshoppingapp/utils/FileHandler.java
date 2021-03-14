@@ -24,7 +24,7 @@ public class FileHandler {
     public static void saveDatabase(HashMap<String, String> database, File file) throws IOException{
         BufferedWriter fWriter = new BufferedWriter(new FileWriter(file));
         for (Map.Entry<String, String> user:database.entrySet()) {
-            fWriter.write(user.getKey().toString() + ":" + user.getValue().toString());
+            fWriter.write(user.getKey() + ":" + user.getValue());
             fWriter.newLine();
         }
         fWriter.close();

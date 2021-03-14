@@ -1,15 +1,28 @@
 package com.example.myshoppingapp;
 
-import java.time.LocalDateTime;
-
 public class HistoryObject {
     private int itemId;
-    private LocalDateTime timeStamp;
+    private String time;
+    private String date;
     private int balance;
 
-    public HistoryObject(int itemId, LocalDateTime timeStamp, int balance) {
+    public HistoryObject(int itemId, String timeStamp, int balance) {
         this.itemId = itemId;
-        this.timeStamp = timeStamp;
         this.balance = balance;
+        String[] dateTimeArray = timeStamp.split(";");
+        this.time = dateTimeArray[0];
+        this.date = dateTimeArray[1];
+    }
+
+    public HistoryObject(int itemId, String time, String date, int balance) {
+        this.itemId = itemId;
+        this.balance = balance;
+        this.time = time;
+        this.date = date;
+    }
+
+    @Override
+    public String toString() {
+        return itemId + ";" + time + ";" + date + ";" + balance;
     }
 }
