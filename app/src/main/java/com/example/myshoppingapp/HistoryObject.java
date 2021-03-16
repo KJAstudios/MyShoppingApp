@@ -1,10 +1,10 @@
 package com.example.myshoppingapp;
 
 public class HistoryObject {
-    private int itemId;
-    private String time;
-    private String date;
-    private int balance;
+    public int itemId;
+    public String time;
+    public String date;
+    public int balance;
 
     public HistoryObject(int itemId, String timeStamp, int balance) {
         this.itemId = itemId;

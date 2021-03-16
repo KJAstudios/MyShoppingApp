@@ -65,7 +65,9 @@ public class ConfirmPurchaseDialog extends Dialog {
                     View view = layout.getChildAt(i);
                     Log.d("id", view.findViewById(R.id.nameButton).getTag().toString());
                     if (Integer.parseInt(view.findViewById(R.id.nameButton).getTag().toString()) == itemId) {
-                        Cart.buySomething(databaseController.getItem(itemId).price);
+                        int itemPrice = databaseController.getItem(itemId).price;
+                        Cart.buySomething(itemPrice);
+                        HistoryManager.addTransaction(itemId, Cart.getMoney());
                         ShopDataManager.removeItem(itemId);
                         layout.removeViewAt(i);
                         break;

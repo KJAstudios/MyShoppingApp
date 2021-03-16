@@ -98,6 +98,14 @@ public class ShopDataManager {
         }
     }
 
+    public static void displayStore(){
+        itemLayout.removeAllViews();
+        for (View item : dataViewList) {
+            // then add the view to the main layout
+            itemLayout.addView(item);
+        }
+    }
+
     public static void searchShopItems(Context context) {
         String query = searchBar.getText().toString();
         List<String> searchTerms = SearchQueryProcessor.processQuery(query);

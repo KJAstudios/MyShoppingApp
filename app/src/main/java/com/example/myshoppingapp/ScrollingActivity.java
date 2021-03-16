@@ -25,6 +25,7 @@ import com.example.myshoppingapp.databasehandler.ShopItemDAO;
 import com.example.myshoppingapp.databasehandler.databaseManager;
 import com.example.myshoppingapp.utils.MoneyUpdateListener;
 import com.example.myshoppingapp.utils.SortSpinnerController;
+import com.example.myshoppingapp.HistoryManager;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -36,6 +37,8 @@ public class ScrollingActivity extends AppCompatActivity {
     private static SharedPreferences preferences = null;
     private String curUser;
     private ItemDatabase itemDatabase;
+    private LinearLayout mainLayout;
+    private ShopItemDAO shopItemDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,15 +75,15 @@ public class ScrollingActivity extends AppCompatActivity {
 
         // init the database of items
         itemDatabase = databaseManager.getDatabase(context);
-        ShopItemDAO shopItemDAO = itemDatabase.shopItemDAO();
+        shopItemDao = itemDatabase.shopItemDAO();
 
         // create and find various views needed
         confirmPurchaseDialog = new ConfirmPurchaseDialog(context);
-        LinearLayout mainLayout = findViewById(R.id.mainVerticalLayout);
+        mainLayout = findViewById(R.id.mainVerticalLayout);
         Button resetButton = findViewById(R.id.search_reset);
 
         // init the main data manager
-        ShopDataManager.InitShopItems(mainLayout, context, (EditText) findViewById(R.id.search_bar), shopItemDAO, resetButton);
+        ShopDataManager.InitShopItems(mainLayout, context, (EditText) findViewById(R.id.search_bar), shopItemDao, resetButton);
 
         //init the moneyUpdateListener by giving it the textView for displaying the balance
         TextView curMoney = findViewById(R.id.cur_money);
@@ -92,7 +95,7 @@ public class ScrollingActivity extends AppCompatActivity {
         curMoney.setText("$" + Cart.getMoney());
 
         //init the history manager to keep track of transactions
-        HistoryManager.Init(curUser, historyFile);
+        HistoryManager.Init(historyFile);
 
         // create the searchbar
         EditText searchBar = findViewById(R.id.search_bar);
@@ -145,8 +148,20 @@ public class ScrollingActivity extends AppCompatActivity {
 
             return true;
         }
+
+        if (id == R.id.view_history){
+            HistoryManager.displayHistory(mainLayout, this, shopItemDao);
+
+            return true;
+        }
+        if (id == R.id.view_store){
+            ShopDataManager.displayStore();
+
+            return true;
+        }
         //noinspection SimplifiableIfStatement
         if (id == R.id.logout) {
+            HistoryManager.saveHistory();
             Cart.shutdownCart(new File(getBaseContext().getFilesDir(), "money.txt"));
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);

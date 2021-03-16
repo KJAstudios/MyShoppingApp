@@ -8,6 +8,16 @@
         android:tooltipText=""
         app:showAsAction="withText" />
     <item
+        android:id="@+id/view_store"
+        android:title="View store"
+        android:tooltipText=""
+        app:showAsAction="withText" />
+    <item
+        android:id="@+id/view_history"
+        android:title="View History"
+        android:tooltipText=""
+        app:showAsAction="withText" />
+    <item
         android:id="@+id/logout"
         android:orderInCategory="100"
         android:title="@string/action_settings"
