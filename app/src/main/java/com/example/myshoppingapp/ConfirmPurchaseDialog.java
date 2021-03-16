@@ -68,8 +68,10 @@ public class ConfirmPurchaseDialog extends Dialog {
                         int itemPrice = databaseController.getItem(itemId).price;
                         Cart.buySomething(itemPrice);
                         HistoryManager.addTransaction(itemId, Cart.getMoney());
-                        ShopDataManager.removeItem(itemId);
-                        layout.removeViewAt(i);
+                        Boolean isAllSold = ShopDataManager.takeItemFromInventory(itemId);
+                        if (isAllSold) {
+                            layout.removeViewAt(i);
+                        }
                         break;
                     }
                 }

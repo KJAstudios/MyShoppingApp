@@ -16,6 +16,7 @@ import com.example.myshoppingapp.utils.ShopItemSorter;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 public class ShopDataManager {
@@ -44,15 +45,13 @@ public class ShopDataManager {
     private static Button resetButton;
     private static ArrayList<Integer> returnedResults = new ArrayList<>();
     private static Context managerContext;
-
-    public static void ShopClicked(int index) {
-
-    }
+    private static HashMap<Integer, Integer> inventory;
 
     public static void InitShopItems(LinearLayout layout, Context context, EditText searchText, ShopItemDAO itemDAO, Button button) {
         managerContext = context;
         databaseController = itemDAO;
         resetButton = button;
+        inventory = new HashMap<>();
         boolean isBadDatabase = false;
         List<ShopItem> itemList = databaseController.getAll();
         if (itemList != null) {
@@ -74,6 +73,8 @@ public class ShopDataManager {
             ArrayList<ShopItem> shopItems = new ArrayList<>();
             for (ShopData item : data) {
                 shopItems.add(new ShopItem(item.getItemId(), item.getName(), item.getImageResource(), item.getDescription(), item.getKeywords(), item.getCost()));
+
+
             }
             databaseController.insertAll(shopItems);
 
@@ -89,6 +90,7 @@ public class ShopDataManager {
         // app will crash on first startup on new device without this, it refreshes the itemList so the view gets populated with correct image resource id
         itemList = databaseController.getAll();
         for (ShopItem item : itemList) {
+            inventory.put(item.itemID, 3);
             View myShopItem = createShopView(inflater, item, itemLayout);
             dataViewList.add(myShopItem);
         }
@@ -188,13 +190,23 @@ public class ShopDataManager {
 
     }
 
-    public static void removeItem(int id) {
+    public static Boolean takeItemFromInventory(int id) {
         for (View item : dataViewList) {
             if (Integer.parseInt(item.findViewById(R.id.nameButton).getTag().toString()) == id) {
+                int numberRemaining = inventory.get(id);
+                numberRemaining--;
+                if (numberRemaining == 0){
                 dataViewList.remove(item);
-                return;
+                inventory.remove(id);
+                return true;
+                }
+                else {
+                    inventory.put(id, numberRemaining);
+                }
+
             }
         }
+        return false;
     }
 
     private static View createShopView(LayoutInflater inflater, final ShopItem item, final LinearLayout curLayout) {
