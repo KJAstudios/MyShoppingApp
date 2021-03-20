@@ -1,4 +1,4 @@
-package com.example.myshoppingapp;
+package com.example.myshoppingapp.shopdatahandler;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,8 +9,11 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.example.myshoppingapp.R;
+import com.example.myshoppingapp.ScrollingActivity;
 import com.example.myshoppingapp.databasehandler.ShopItem;
 import com.example.myshoppingapp.databasehandler.ShopItemDAO;
+import com.example.myshoppingapp.searchhandler.SearchLoadingScreen;
 import com.example.myshoppingapp.utils.SearchQueryProcessor;
 import com.example.myshoppingapp.utils.ShopItemSorter;
 
@@ -21,86 +24,38 @@ import java.util.List;
 
 public class ShopDataManager {
 
-    private static ShopData data[] = {new ShopData("Bone", R.drawable.bone, "Good chew toy", 1, 0, "dog:food:pet"),
-            new ShopData("Carrot", R.drawable.carrot, "Good chew", 1, 1, "food:vegetable:cold"),
-            new ShopData("Dog", R.drawable.dog, "Chews toy", 2, 2, "pet:animal"),
-            new ShopData("Flame", R.drawable.flame, "it burns", 1, 3, "tool:dangerous"),
-            new ShopData("Grapes", R.drawable.grapes, "You eat them", 1, 4, "food:fruit:cold"),
-            new ShopData("House", R.drawable.house, "As opposed to home", 100, 5, "shelter:living:household"),
-            new ShopData("Lamp", R.drawable.lamp, "It lights", 2, 6, "furniture:household:living"),
-            new ShopData("Mouse", R.drawable.mouse, "not a rat", 1, 7, "animal:pet:rodent"),
-            new ShopData("Nail", R.drawable.nail, "Hammer Required", 1, 8, "tool:household"),
-            new ShopData("Penguin", R.drawable.penguin, "Find Batman", 10, 9, "animal:bird"),
-            new ShopData("Rocks", R.drawable.rocks, "Rolls", 1, 10, "outdoors:decoration:yard"),
-            new ShopData("Star", R.drawable.star, "Like the sun but farther away", 25, 11, "space:danger:bright"),
-            new ShopData("Toad", R.drawable.toad, "like a frog", 1, 12, "animal:reptile"),
-            new ShopData("Van", R.drawable.van, "Has four wheels", 10, 13, "transport:car"),
-            new ShopData("Wheat", R.drawable.wheat, "Some breads have it", 1, 14, "food:grain:unprocessed"),
-            new ShopData("Yak", R.drawable.yak, "Yakity Yak Yak", 15, 15, "animal:mammal:farm")};
 
     private static List<View> dataViewList;
     private static EditText searchBar;
-    private static ShopItemDAO databaseController;
     private static LinearLayout itemLayout;
     private static Button resetButton;
     private static ArrayList<Integer> returnedResults = new ArrayList<>();
     private static Context managerContext;
     private static HashMap<Integer, Integer> inventory;
+    private static List<ShopItem> itemList;
 
-    public static void InitShopItems(LinearLayout layout, Context context, EditText searchText, ShopItemDAO itemDAO, Button button) {
+    public static void initShop(LinearLayout layout, Context context, EditText searchText, Button button) {
+        // parameter input/setup
         managerContext = context;
-        databaseController = itemDAO;
         resetButton = button;
         inventory = new HashMap<>();
-        boolean isBadDatabase = false;
-        List<ShopItem> itemList = databaseController.getAll();
-        if (itemList != null) {
-            for (ShopItem item : itemList) {
-                if (item.image != data[item.itemID].getImageResource()) {
-                    isBadDatabase = true;
-                    break;
-                }
-            }
-        }
-        if (itemList == null || itemList.size() == 0) {
-            ArrayList<ShopItem> shopItems = new ArrayList<>();
-            for (ShopData item : data) {
-                shopItems.add(new ShopItem(item.getItemId(), item.getName(), item.getImageResource(), item.getDescription(), item.getKeywords(), item.getCost()));
-            }
-            databaseController.insertAll(shopItems);
-        } else if (isBadDatabase) {
-            databaseController.clearDatabase();
-            ArrayList<ShopItem> shopItems = new ArrayList<>();
-            for (ShopData item : data) {
-                shopItems.add(new ShopItem(item.getItemId(), item.getName(), item.getImageResource(), item.getDescription(), item.getKeywords(), item.getCost()));
-
-
-            }
-            databaseController.insertAll(shopItems);
-
-        }
-
-
         searchBar = searchText;
-        // inflate our custom layout
-        LayoutInflater inflater = LayoutInflater.from(context);
         itemLayout = layout;
+    }
+
+    public static void InitShopItemsDisplay() {
+
+
+        // inflate our custom layout and set up layout resources
+        LayoutInflater inflater = LayoutInflater.from(managerContext);
         dataViewList = new ArrayList<>();
 
         // app will crash on first startup on new device without this, it refreshes the itemList so the view gets populated with correct image resource id
-        itemList = databaseController.getAll();
         for (ShopItem item : itemList) {
             inventory.put(item.itemID, 3);
             View myShopItem = createShopView(inflater, item, itemLayout);
             dataViewList.add(myShopItem);
         }
-        for (View item : dataViewList) {
-            // then add the view to the main layout
-            layout.addView(item);
-        }
-    }
-
-    public static void displayStore(){
         itemLayout.removeAllViews();
         for (View item : dataViewList) {
             // then add the view to the main layout
@@ -108,7 +63,15 @@ public class ShopDataManager {
         }
     }
 
-    public static void searchShopItems(Context context) {
+    public static void displayStore() {
+        itemLayout.removeAllViews();
+        for (View item : dataViewList) {
+            // then add the view to the main layout
+            itemLayout.addView(item);
+        }
+    }
+
+    public static void searchShopItems(Context context, ShopItemDAO itemDAO) {
         String query = searchBar.getText().toString();
         List<String> searchTerms = SearchQueryProcessor.processQuery(query);
         if (searchTerms == null) {
@@ -117,21 +80,17 @@ public class ShopDataManager {
             toast.show();
         } else {
             returnedResults.clear();
-            for (String term : searchTerms) {
-                int[] foundItems = databaseController.search(term);
-                for (int item : foundItems) {
-                    if (!returnedResults.contains(item)) {
-                        returnedResults.add(item);
-                    }
-                }
-            }
-            itemLayout.removeAllViews();
-            for (int itemID : returnedResults) {
-                View tempView = dataViewList.get(itemID);
-                itemLayout.addView(tempView);
-            }
-            resetButton.setVisibility(View.VISIBLE);
+            SearchLoadingScreen loadingScreen = new SearchLoadingScreen(itemDAO, itemLayout, LayoutInflater.from(managerContext), searchTerms);
         }
+    }
+
+    public static void finishSearching() {
+        itemLayout.removeAllViews();
+        for (int itemID : returnedResults) {
+            View tempView = dataViewList.get(itemID);
+            itemLayout.addView(tempView);
+        }
+        resetButton.setVisibility(View.VISIBLE);
     }
 
     public static void resetShopItems() {
@@ -150,20 +109,22 @@ public class ShopDataManager {
      * @param spinnerResult which sort option is selected from the spinner
      */
     public static void sortShopItems(String spinnerResult) {
-        List<ShopItem> shopItems;
-        if(itemLayout.getChildCount() == 0){
+        List<View> shopItems;
+        if (itemLayout.getChildCount() == 0) {
             Toast toast = Toast.makeText(managerContext, "Nothing to sort", Toast.LENGTH_SHORT);
             toast.show();
             return;
-        }
-        else if (!returnedResults.isEmpty()) {
-            shopItems = databaseController.getItemsFromIdList(returnedResults);
+        } else if (!returnedResults.isEmpty()) {
+            shopItems = new ArrayList<>();
+            for (int result : returnedResults) {
+                shopItems.add(dataViewList.get(result));
+            }
         } else {
-            shopItems = databaseController.getAll();
+            shopItems = dataViewList;
         }
 
         switch (spinnerResult) {
-            case "default":
+            case "default sort":
                 break;
             case "A-Z":
                 shopItems = ShopItemSorter.sortByName(shopItems);
@@ -182,11 +143,11 @@ public class ShopDataManager {
                 break;
         }
 
+        if (shopItems != null){
         itemLayout.removeAllViews();
-        for (ShopItem item : shopItems) {
-            View tempView = dataViewList.get(item.itemID);
-            itemLayout.addView(tempView);
-        }
+        for (View view : shopItems) {
+            itemLayout.addView(view);
+        }}
 
     }
 
@@ -195,12 +156,11 @@ public class ShopDataManager {
             if (Integer.parseInt(item.findViewById(R.id.nameButton).getTag().toString()) == id) {
                 int numberRemaining = inventory.get(id);
                 numberRemaining--;
-                if (numberRemaining == 0){
-                dataViewList.remove(item);
-                inventory.remove(id);
-                return true;
-                }
-                else {
+                if (numberRemaining == 0) {
+                    dataViewList.remove(item);
+                    inventory.remove(id);
+                    return true;
+                } else {
                     inventory.put(id, numberRemaining);
                 }
 
@@ -217,7 +177,7 @@ public class ShopDataManager {
             @Override
             public void onClick(View v) {
                 ScrollingActivity.confirmPurchaseDialog.show();
-                ScrollingActivity.confirmPurchaseDialog.SetDetails(item.itemID, layout, databaseController);
+                ScrollingActivity.confirmPurchaseDialog.SetDetails(item, layout);
             }
         };
         // set info for the item
@@ -232,5 +192,17 @@ public class ShopDataManager {
         imageButton.setImageResource(item.image);
         imageButton.setOnClickListener(clickListener);
         return myShopItem;
+    }
+
+    public static void setItemList(List<ShopItem> inList) {
+        itemList = inList;
+    }
+
+    public static void setReturnedResults(ArrayList<Integer> results) {
+        returnedResults = results;
+    }
+
+    public static void setDataViewList(List<View> viewList){
+        dataViewList = viewList;
     }
 }

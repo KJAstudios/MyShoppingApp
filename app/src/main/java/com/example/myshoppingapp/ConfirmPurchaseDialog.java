@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import com.example.myshoppingapp.databasehandler.ShopItem;
 import com.example.myshoppingapp.databasehandler.ShopItemDAO;
 import com.example.myshoppingapp.historyhandler.HistoryManager;
+import com.example.myshoppingapp.shopdatahandler.ShopDataManager;
 
 public class ConfirmPurchaseDialog extends Dialog {
     public ConfirmPurchaseDialog(@NonNull Context context) {
@@ -36,8 +37,8 @@ public class ConfirmPurchaseDialog extends Dialog {
         });
     }
 
-    public void SetDetails(final int itemIndex, LinearLayout layout, final ShopItemDAO databaseController) {
-        ShopItem shopItem = databaseController.getItem(itemIndex);
+    public void SetDetails(final ShopItem item, LinearLayout layout) {
+        ShopItem shopItem = item;
         TextView title = findViewById(R.id.nameText);
         title.setText(shopItem.itemName);
 
@@ -50,7 +51,7 @@ public class ConfirmPurchaseDialog extends Dialog {
         ImageView image = findViewById(R.id.itemImage);
         image.setImageResource(shopItem.image);
 
-        final int curIndex = itemIndex;
+        final int curIndex = item.itemID;
         final LinearLayout curLayout = layout;
         final int curItemId = shopItem.itemID;
         Button purchaseButton = findViewById(R.id.purchase_button);
@@ -66,7 +67,7 @@ public class ConfirmPurchaseDialog extends Dialog {
                     View view = layout.getChildAt(i);
                     Log.d("id", view.findViewById(R.id.nameButton).getTag().toString());
                     if (Integer.parseInt(view.findViewById(R.id.nameButton).getTag().toString()) == itemId) {
-                        int itemPrice = databaseController.getItem(itemId).price;
+                        int itemPrice = item.price;
                         Cart.buySomething(itemPrice);
                         HistoryManager.addTransaction(itemId, Cart.getMoney());
                         Boolean isAllSold = ShopDataManager.takeItemFromInventory(itemId);

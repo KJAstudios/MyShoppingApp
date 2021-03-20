@@ -1,4 +1,4 @@
-package com.example.myshoppingapp;
+package com.example.myshoppingapp.shopdatahandler;
 
 public class ShopData {
     private String name;

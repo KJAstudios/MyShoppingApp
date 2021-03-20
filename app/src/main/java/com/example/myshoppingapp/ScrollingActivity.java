@@ -2,8 +2,6 @@ package com.example.myshoppingapp;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -20,7 +18,6 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.preference.PreferenceManager;
 
 import com.example.myshoppingapp.databasehandler.ItemDaoThreadWrapper;
 import com.example.myshoppingapp.databasehandler.ItemDatabase;
@@ -28,18 +25,20 @@ import com.example.myshoppingapp.databasehandler.ShopItemDAO;
 import com.example.myshoppingapp.databasehandler.databaseManager;
 import com.example.myshoppingapp.historyhandler.HistoryLoadingScreen;
 import com.example.myshoppingapp.historyhandler.HistoryManager;
-import com.example.myshoppingapp.historyhandler.LoadHistoryThread;
+import com.example.myshoppingapp.shopdatahandler.ShopDataLoadingScreen;
+import com.example.myshoppingapp.shopdatahandler.ShopDataManager;
 import com.example.myshoppingapp.utils.MoneyUpdateListener;
 import com.example.myshoppingapp.utils.SortSpinnerController;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.zip.Inflater;
 
 public class ScrollingActivity extends AppCompatActivity {
 
     public static ConfirmPurchaseDialog confirmPurchaseDialog = null;
-    private static SharedPreferences preferences = null;
+
     private String curUser;
     private ItemDatabase itemDatabase;
     private LinearLayout mainLayout;
@@ -48,6 +47,7 @@ public class ScrollingActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // android startup stuff
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scrolling);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -55,7 +55,7 @@ public class ScrollingActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         final Context context = this;
 
-        preferences = PreferenceManager.getDefaultSharedPreferences(context);
+
 
         // make sure the saved money database for each user exists
         File moneyFile = new File(getBaseContext().getFilesDir(), "money.txt");
@@ -91,7 +91,7 @@ public class ScrollingActivity extends AppCompatActivity {
         Button resetButton = findViewById(R.id.search_reset);
 
         // init the main data manager
-        ShopDataManager.InitShopItems(mainLayout, context, (EditText) findViewById(R.id.search_bar), shopItemDAO, resetButton);
+        ShopDataManager.initShop(mainLayout, context, (EditText) findViewById(R.id.search_bar), resetButton);
 
         //init the moneyUpdateListener by giving it the textView for displaying the balance
         TextView curMoney = findViewById(R.id.cur_money);
@@ -111,7 +111,7 @@ public class ScrollingActivity extends AppCompatActivity {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH){
-                    ShopDataManager.searchShopItems(context);
+                    ShopDataManager.searchShopItems(context, shopItemDAO);
                 }
                 return false;
             }
@@ -133,7 +133,12 @@ public class ScrollingActivity extends AppCompatActivity {
         sortSpinner.setAdapter(stringAdapter);
         sortSpinner.setOnItemSelectedListener(new SortSpinnerController());
 
+        //now that everything is created, now send it over to the ShopDataLoadingScreen to display the data
+        ShopDataLoadingScreen shopDataLoadingScreen = new ShopDataLoadingScreen(shopItemDAO, mainLayout, LayoutInflater.from(this));
+
     }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -178,9 +183,7 @@ public class ScrollingActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public static SharedPreferences getPreferences() {
-        return preferences;
-    }
+
 
     private void updateMoney() {
         TextView curMoney = findViewById(R.id.cur_money);
