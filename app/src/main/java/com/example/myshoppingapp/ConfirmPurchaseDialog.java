@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 
 import com.example.myshoppingapp.databasehandler.ShopItem;
 import com.example.myshoppingapp.databasehandler.ShopItemDAO;
+import com.example.myshoppingapp.historyhandler.HistoryManager;
 
 public class ConfirmPurchaseDialog extends Dialog {
     public ConfirmPurchaseDialog(@NonNull Context context) {

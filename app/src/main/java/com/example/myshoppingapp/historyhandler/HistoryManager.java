@@ -1,4 +1,4 @@
-package com.example.myshoppingapp;
+package com.example.myshoppingapp.historyhandler;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,8 +8,8 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.myshoppingapp.R;
 import com.example.myshoppingapp.databasehandler.ShopItem;
-import com.example.myshoppingapp.databasehandler.ShopItemDAO;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -28,22 +28,26 @@ public class HistoryManager {
     private static File historyFile;
     private static Queue<HistoryObject> userHistory;
     private static SimpleDateFormat dateFormat;
+    private static Context context;
+    private static LinearLayout mainLayout;
+    private static ArrayList<HistoryObject> historyObjects;
 
     // initializes the history manager with the necessary data to do its work
-    public static void Init(File historyF) {
+    public static void Init(File historyF, Context mainContext, LinearLayout layout) {
         historyFile = historyF;
         userHistory = new LinkedList<>();
         dateFormat = new SimpleDateFormat("HH:mm;MM/dd/YYYY");
+        context = mainContext;
+        mainLayout = layout;
     }
 
-    public static void displayHistory(LinearLayout layout, Context context, ShopItemDAO shopItemDao){
+    public static void displayHistory(){
         saveHistory();
-        ArrayList<HistoryObject> historyObjects = loadHistoryData();
-        layout.removeAllViews();
+        mainLayout.removeAllViews();
         LayoutInflater inflater = LayoutInflater.from(context);
         // create
         for (HistoryObject historyObject: historyObjects){
-            ShopItem item = shopItemDao.getItem(historyObject.itemId);
+            ShopItem item = historyObject.item;
             View historyItemView = inflater.inflate(R.layout.history_item, null);
             ImageButton imageButton = historyItemView.findViewById(R.id.imageButton2);
             imageButton.setImageResource(item.image);
@@ -55,7 +59,7 @@ public class HistoryManager {
             balButton.setText("$" + historyObject.balance);
             TextView timeStamp = historyItemView.findViewById(R.id.timeDateText);
             timeStamp.setText("Purchased on " + historyObject.date + " at " + historyObject.time);
-            layout.addView(historyItemView);
+            mainLayout.addView(historyItemView);
         }
     }
 
@@ -65,7 +69,7 @@ public class HistoryManager {
     }
 
     // loads the history from the file to display
-    private static ArrayList<HistoryObject> loadHistoryData() {
+    public static ArrayList<HistoryObject> loadHistoryData(File historyFile) {
         ArrayList<HistoryObject> historyList = new ArrayList<>();
 
         try {
@@ -93,5 +97,14 @@ public class HistoryManager {
         } catch (IOException e) {
 
         }
+    }
+
+    public static void setHistoryObjects(ArrayList<HistoryObject> inHistoryObjects){
+        historyObjects = inHistoryObjects;
+        HistoryLoadingManager.notifyListener();
+    }
+
+    public static File getHistoryFile(){
+        return historyFile;
     }
 }

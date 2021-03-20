@@ -1,10 +1,13 @@
-package com.example.myshoppingapp;
+package com.example.myshoppingapp.historyhandler;
+
+import com.example.myshoppingapp.databasehandler.ShopItem;
 
 public class HistoryObject {
     public int itemId;
     public String time;
     public String date;
     public int balance;
+    public ShopItem item;
 
     public HistoryObject(int itemId, String timeStamp, int balance) {
         this.itemId = itemId;

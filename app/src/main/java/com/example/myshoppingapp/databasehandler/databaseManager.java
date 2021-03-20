@@ -9,7 +9,7 @@ public class databaseManager {
 
     public static ItemDatabase getDatabase(Context context) {
         if (itemDatabase == null) {
-            itemDatabase = Room.databaseBuilder(context, ItemDatabase.class, "item-database").createFromAsset("mainDatabase.db").allowMainThreadQueries().build();
+            itemDatabase = Room.databaseBuilder(context, ItemDatabase.class, "item-database").allowMainThreadQueries().createFromAsset("mainDatabase.db").build();
         }
         return itemDatabase;
     }
