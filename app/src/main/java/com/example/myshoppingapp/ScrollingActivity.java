@@ -3,6 +3,7 @@ package com.example.myshoppingapp;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -19,6 +20,12 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.myshoppingapp.databasehandler.ItemDaoThreadWrapper;
 import com.example.myshoppingapp.databasehandler.ItemDatabase;
 import com.example.myshoppingapp.databasehandler.ShopItemDAO;
@@ -36,7 +43,6 @@ import java.io.IOException;
 import java.util.zip.Inflater;
 
 public class ScrollingActivity extends AppCompatActivity {
-
     public static ConfirmPurchaseDialog confirmPurchaseDialog = null;
 
     private String curUser;
@@ -84,6 +90,8 @@ public class ScrollingActivity extends AppCompatActivity {
         shopItemDAO = itemDatabase.shopItemDAO();
         itemDao = ItemDaoThreadWrapper.getInstance(shopItemDAO);
 
+        // init the apiCaller
+        ApiCaller.init(this);
 
         // create and find various views needed
         confirmPurchaseDialog = new ConfirmPurchaseDialog(context);

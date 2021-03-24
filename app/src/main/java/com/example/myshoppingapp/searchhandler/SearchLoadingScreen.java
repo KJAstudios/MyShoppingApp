@@ -6,7 +6,6 @@ import android.widget.LinearLayout;
 import com.example.myshoppingapp.R;
 import com.example.myshoppingapp.databasehandler.ShopItemDAO;
 import com.example.myshoppingapp.shopdatahandler.LoadManager;
-import com.example.myshoppingapp.shopdatahandler.LoadShopThread;
 import com.example.myshoppingapp.shopdatahandler.ShopDataManager;
 
 import java.util.List;

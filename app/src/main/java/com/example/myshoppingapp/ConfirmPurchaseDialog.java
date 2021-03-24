@@ -68,7 +68,9 @@ public class ConfirmPurchaseDialog extends Dialog {
                     Log.d("id", view.findViewById(R.id.nameButton).getTag().toString());
                     if (Integer.parseInt(view.findViewById(R.id.nameButton).getTag().toString()) == itemId) {
                         int itemPrice = item.price;
+                        // buy the item and send it to the server
                         Cart.buySomething(itemPrice);
+                        ApiCaller.postRequest(item.toString());
                         HistoryManager.addTransaction(itemId, Cart.getMoney());
                         Boolean isAllSold = ShopDataManager.takeItemFromInventory(itemId);
                         if (isAllSold) {
