@@ -70,7 +70,7 @@ public class ConfirmPurchaseDialog extends Dialog {
                         int itemPrice = item.price;
                         // buy the item and send it to the server
                         Cart.buySomething(itemPrice);
-                        ApiCaller.postRequest(item.toString());
+                        ApiCaller.postRequest(item);
                         HistoryManager.addTransaction(itemId, Cart.getMoney());
                         Boolean isAllSold = ShopDataManager.takeItemFromInventory(itemId);
                         if (isAllSold) {

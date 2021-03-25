@@ -1,5 +1,8 @@
 package com.example.myshoppingapp.searchhandler;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import com.example.myshoppingapp.databasehandler.ShopItemDAO;
 import com.example.myshoppingapp.shopdatahandler.LoadManager;
 import com.example.myshoppingapp.shopdatahandler.ShopData;
@@ -27,6 +30,13 @@ public class SearchResultThread implements Runnable {
             }
         }
         ShopDataManager.setReturnedResults(returnedResults);
-        LoadManager.notifyListener();
+        Handler mainHandler = new Handler(Looper.getMainLooper());
+        mainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                LoadManager.notifyListener();
+            }
+        });
+
     }
 }

@@ -22,13 +22,17 @@ shoplist = [
         'name': 'Jellyfish',
         'image': 'jellyfish',
         'description': "It stings",
-        'cost': 1
+        'cost': 1,
+        'itemId': 16,
+        'keywords': 'animal:fish:pain'
     },
     {
         'name': 'Kitten',
         'image': 'kitten',
         'description': "It purrs",
-        'cost': 1
+        'cost': 1,
+        'itemId': 17,
+        'keywords': 'animal:mammal:pet'
     }
 ]
 
@@ -46,7 +50,6 @@ def post_buy():
     if not request.json:
         abort(400)
 
-    print(request.get("item"))
     if 'name' in request.json:
         print("buy: " + request.json.get('name', '?'))
     else:

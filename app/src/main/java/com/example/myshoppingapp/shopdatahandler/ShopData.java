@@ -9,7 +9,7 @@ public class ShopData {
     private String keywords;
     private boolean purchased;
 
-    ShopData(String name, int imageResource, String description, int cost, int itemId, String keywords) {
+    public ShopData(String name, int imageResource, String description, int cost, int itemId, String keywords) {
         this.name = name;
         this.imageResource = imageResource;
         this.description = description;

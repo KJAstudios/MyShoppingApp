@@ -5,8 +5,6 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-import java.util.Comparator;
-
 @Entity
 public class ShopItem {
 
@@ -29,7 +27,7 @@ public class ShopItem {
     @ColumnInfo
     public int price;
 
-    public ShopItem(int itemID, String itemName, int image, String description, String keywords, int price){
+    public ShopItem(int itemID, String itemName, int image, String description, String keywords, int price) {
         this.itemID = itemID;
         this.itemName = itemName;
         this.image = image;
@@ -37,6 +35,11 @@ public class ShopItem {
         this.keywords = keywords;
         this.price = price;
     }
+
+    public String toJson() {
+        String returnString = "{name: Kitten, image: kitten, description: It purrs, cost: 1, itemId: 17, keywords: animal:mammal:pe' }";
+            return returnString;
+}
 }
 
 

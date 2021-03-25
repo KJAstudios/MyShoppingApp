@@ -3,15 +3,17 @@ package com.example.myshoppingapp.shopdatahandler;
 import android.os.Handler;
 import android.os.Looper;
 
+import com.example.myshoppingapp.ApiCaller;
 import com.example.myshoppingapp.R;
 import com.example.myshoppingapp.databasehandler.ShopItem;
 import com.example.myshoppingapp.databasehandler.ShopItemDAO;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class LoadShopThread implements Runnable {
-    private static ShopData data[] = {new ShopData("Bone", R.drawable.bone, "Good chew toy", 1, 0, "dog:food:pet"),
+    private ShopData data[] = {new ShopData("Bone", R.drawable.bone, "Good chew toy", 1, 0, "dog:food:pet"),
             new ShopData("Carrot", R.drawable.carrot, "Good chew", 1, 1, "food:vegetable:cold"),
             new ShopData("Dog", R.drawable.dog, "Chews toy", 2, 2, "pet:animal"),
             new ShopData("Flame", R.drawable.flame, "it burns", 1, 3, "tool:dangerous"),
@@ -27,21 +29,26 @@ public class LoadShopThread implements Runnable {
             new ShopData("Van", R.drawable.van, "Has four wheels", 10, 13, "transport:car"),
             new ShopData("Wheat", R.drawable.wheat, "Some breads have it", 1, 14, "food:grain:unprocessed"),
             new ShopData("Yak", R.drawable.yak, "Yakity Yak Yak", 15, 15, "animal:mammal:farm")};
-
+    private List<ShopData> dataArrayList = new ArrayList<>(Arrays.asList(data));
     private ShopItemDAO databaseController;
+    private Boolean dataLoaded = false;
 
-    public LoadShopThread(ShopItemDAO databaseController){
+    public LoadShopThread(ShopItemDAO databaseController) {
         this.databaseController = databaseController;
     }
 
     @Override
-    public void run(){
+    public void run() {
         //check the database to make sure the image ids are correct, and load it from the array
+        ApiCaller.getRequest(this);
+        while (!dataLoaded) {
+
+        }
         boolean isBadDatabase = false;
         List<ShopItem> itemList = databaseController.getAll();
-        if (itemList != null) {
-            for (ShopItem item : itemList) {
-                if (item.image != data[item.itemID].getImageResource()) {
+        if (itemList != null && itemList.size() == dataArrayList.size()) {
+            for (int i = 0; i < itemList.size(); i++) {
+                if (itemList.get(i).image != dataArrayList.get(i).getImageResource()) {
                     isBadDatabase = true;
                     break;
                 }
@@ -50,14 +57,14 @@ public class LoadShopThread implements Runnable {
         // if the database is empty, or if the ids are wrong, populate it f
         if (itemList == null || itemList.size() == 0) {
             ArrayList<ShopItem> shopItems = new ArrayList<>();
-            for (ShopData item : data) {
+            for (ShopData item : dataArrayList) {
                 shopItems.add(new ShopItem(item.getItemId(), item.getName(), item.getImageResource(), item.getDescription(), item.getKeywords(), item.getCost()));
             }
             databaseController.insertAll(shopItems);
-        } else if (isBadDatabase) {
+        } else if (isBadDatabase || itemList.size() != dataArrayList.size()) {
             databaseController.clearDatabase();
             ArrayList<ShopItem> shopItems = new ArrayList<>();
-            for (ShopData item : data) {
+            for (ShopData item : dataArrayList) {
                 shopItems.add(new ShopItem(item.getItemId(), item.getName(), item.getImageResource(), item.getDescription(), item.getKeywords(), item.getCost()));
 
 
@@ -78,4 +85,8 @@ public class LoadShopThread implements Runnable {
         });
     }
 
+    public void putDataFromServer(ArrayList<ShopData> inList) {
+        dataArrayList.addAll(inList);
+        dataLoaded = true;
+    }
 }
