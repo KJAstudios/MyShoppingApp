@@ -42,7 +42,7 @@ def get_list():
 @app.route('/buy', methods=['POST'])
 def post_buy():
     print("buy")
-    
+
     if not request.json:
         abort(400)
 

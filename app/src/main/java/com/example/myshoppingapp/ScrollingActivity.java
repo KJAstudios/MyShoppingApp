@@ -29,9 +29,11 @@ import com.android.volley.toolbox.Volley;
 import com.example.myshoppingapp.databasehandler.ItemDaoThreadWrapper;
 import com.example.myshoppingapp.databasehandler.ItemDatabase;
 import com.example.myshoppingapp.databasehandler.ShopItemDAO;
+import com.example.myshoppingapp.databasehandler.UserPreferenceDAO;
 import com.example.myshoppingapp.databasehandler.databaseManager;
 import com.example.myshoppingapp.historyhandler.HistoryLoadingScreen;
 import com.example.myshoppingapp.historyhandler.HistoryManager;
+import com.example.myshoppingapp.shopdatahandler.SaveSortManager;
 import com.example.myshoppingapp.shopdatahandler.ShopDataLoadingScreen;
 import com.example.myshoppingapp.shopdatahandler.ShopDataManager;
 import com.example.myshoppingapp.utils.MoneyUpdateListener;
@@ -61,6 +63,8 @@ public class ScrollingActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         final Context context = this;
 
+        // class init stuff
+        curUser = getIntent().getStringExtra("User");
 
 
         // make sure the saved money database for each user exists
@@ -89,6 +93,8 @@ public class ScrollingActivity extends AppCompatActivity {
         itemDatabase = databaseManager.getDatabase(context);
         shopItemDAO = itemDatabase.shopItemDAO();
         itemDao = ItemDaoThreadWrapper.getInstance(shopItemDAO);
+        UserPreferenceDAO userPreferenceDAO = itemDatabase.userPreferenceDAO();
+        SaveSortManager.Init(userPreferenceDAO, curUser);
 
         // init the apiCaller
         ApiCaller.init(this);
@@ -98,13 +104,21 @@ public class ScrollingActivity extends AppCompatActivity {
         mainLayout = findViewById(R.id.mainVerticalLayout);
         Button resetButton = findViewById(R.id.search_reset);
 
+        // create the sort menu
+        Spinner sortSpinner = findViewById(R.id.sort_spinner);
+        // creates a textView for each string in the sort_array string resource
+        ArrayAdapter<CharSequence> stringAdapter = ArrayAdapter.createFromResource(this, R.array.sort_array, R.layout.spinner_text_layout);
+        stringAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sortSpinner.setAdapter(stringAdapter);
+        sortSpinner.setOnItemSelectedListener(new SortSpinnerController());
+
         // init the main data manager
-        ShopDataManager.initShop(mainLayout, context, (EditText) findViewById(R.id.search_bar), resetButton);
+        ShopDataManager.initShop(mainLayout, context, (EditText) findViewById(R.id.search_bar), resetButton, curUser, sortSpinner);
 
         //init the moneyUpdateListener by giving it the textView for displaying the balance
         TextView curMoney = findViewById(R.id.cur_money);
         MoneyUpdateListener.initInstance(curMoney);
-        curUser = getIntent().getStringExtra("User");
+
 
         // init the cart and set the starting money for the user
         Cart.InitCart(curUser, moneyFile);
@@ -133,13 +147,7 @@ public class ScrollingActivity extends AppCompatActivity {
             }
         });
 
-        // create the sort menu
-        Spinner sortSpinner = findViewById(R.id.sort_spinner);
-        // creates a textView for each string in the sort_array string resource
-        ArrayAdapter<CharSequence> stringAdapter = ArrayAdapter.createFromResource(this, R.array.sort_array, R.layout.spinner_text_layout);
-        stringAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        sortSpinner.setAdapter(stringAdapter);
-        sortSpinner.setOnItemSelectedListener(new SortSpinnerController());
+
 
         //now that everything is created, now send it over to the ShopDataLoadingScreen to display the data
         ShopDataLoadingScreen shopDataLoadingScreen = new ShopDataLoadingScreen(shopItemDAO, mainLayout, LayoutInflater.from(this));

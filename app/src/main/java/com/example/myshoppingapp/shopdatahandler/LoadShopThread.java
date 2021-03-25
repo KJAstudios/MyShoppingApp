@@ -72,6 +72,7 @@ public class LoadShopThread implements Runnable {
             @Override
             public void run() {
                 ShopDataManager.setItemList(returnList);
+                ShopDataManager.setLoadedSortType(SaveSortManager.loadPreference());
                 LoadManager.notifyListener();
             }
         });

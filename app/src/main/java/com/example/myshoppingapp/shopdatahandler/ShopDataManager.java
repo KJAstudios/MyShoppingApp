@@ -3,10 +3,12 @@ package com.example.myshoppingapp.shopdatahandler;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.myshoppingapp.R;
@@ -33,14 +35,20 @@ public class ShopDataManager {
     private static Context managerContext;
     private static HashMap<Integer, Integer> inventory;
     private static List<ShopItem> itemList;
+    private static String user;
+    private static String loadedSortType;
+    private static Boolean isFirstSort = true;
+    private static Spinner spinner;
 
-    public static void initShop(LinearLayout layout, Context context, EditText searchText, Button button) {
+    public static void initShop(LinearLayout layout, Context context, EditText searchText, Button button, String inUser, Spinner inSpinner) {
         // parameter input/setup
         managerContext = context;
         resetButton = button;
         inventory = new HashMap<>();
         searchBar = searchText;
         itemLayout = layout;
+        user = inUser;
+        spinner = inSpinner;
     }
 
     public static void InitShopItemsDisplay() {
@@ -61,6 +69,24 @@ public class ShopDataManager {
             // then add the view to the main layout
             itemLayout.addView(item);
         }
+        switch (loadedSortType){
+            case "default sort":
+                spinner.setSelection(0);
+                break;
+            case "A-Z":
+                spinner.setSelection(1);
+                break;
+            case "Z-A":
+                spinner.setSelection(2);
+                break;
+            case "Highest Price":
+                spinner.setSelection(3);
+                break;
+            case "Lowest Price":
+                spinner.setSelection(4);
+                break;
+        }
+
     }
 
     public static void displayStore() {
@@ -125,30 +151,52 @@ public class ShopDataManager {
 
         switch (spinnerResult) {
             case "default sort":
+                if (!isFirstSort) {
+                    SaveSortManager.updatePreferences("default sort");
+                }
                 break;
             case "A-Z":
                 shopItems = ShopItemSorter.sortByName(shopItems);
+                if (!isFirstSort) {
+                    SaveSortManager.updatePreferences("A-Z");
+                }
                 break;
             case "Z-A":
                 shopItems = ShopItemSorter.sortByName(shopItems);
                 Collections.reverse(shopItems);
+                if (!isFirstSort) {
+                    SaveSortManager.updatePreferences("Z-A");
+                }
                 break;
             case "Highest Price":
                 shopItems = ShopItemSorter.sortByCost(shopItems);
                 Collections.reverse(shopItems);
+                if (!isFirstSort) {
+                    SaveSortManager.updatePreferences("Highest Price");
+                }
                 break;
             case "Lowest Price":
                 shopItems = ShopItemSorter.sortByCost(shopItems);
+                if (!isFirstSort) {
+                    SaveSortManager.updatePreferences("Lowest Price");
+                }
 
                 break;
         }
 
-        if (shopItems != null){
-        itemLayout.removeAllViews();
-        for (View view : shopItems) {
-            itemLayout.addView(view);
-        }}
-
+        if (shopItems != null) {
+            itemLayout.removeAllViews();
+            for (View view : shopItems) {
+                LinearLayout parent = (LinearLayout) view.getParent();
+                if (parent != null){
+                    parent.removeView(view);
+                }
+                itemLayout.addView(view);
+            }
+        }
+        if (isFirstSort) {
+            isFirstSort = false;
+        }
     }
 
     public static Boolean takeItemFromInventory(int id) {
@@ -202,7 +250,11 @@ public class ShopDataManager {
         returnedResults = results;
     }
 
-    public static void setDataViewList(List<View> viewList){
+    public static void setLoadedSortType(String sortType){
+        loadedSortType = sortType;
+    }
+
+    public static void setDataViewList(List<View> viewList) {
         dataViewList = viewList;
     }
 }
