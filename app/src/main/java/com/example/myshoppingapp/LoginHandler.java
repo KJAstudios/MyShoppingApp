@@ -51,6 +51,7 @@ public class LoginHandler {
     public static Boolean login(View view) {
         String username = nameField.getText().toString();
         String password = passwordField.getText().toString();
+        ApiCaller.loginRequest(username, password);
         if (userCredentials.get(username) != null) {
             String realPass = userCredentials.get(username);
             if (password.equals(realPass)) {

@@ -14,7 +14,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.example.myshoppingapp.databasehandler.ShopItem;
-import com.example.myshoppingapp.databasehandler.ShopItemDAO;
 import com.example.myshoppingapp.historyhandler.HistoryManager;
 import com.example.myshoppingapp.shopdatahandler.ShopDataManager;
 
@@ -70,7 +69,7 @@ public class ConfirmPurchaseDialog extends Dialog {
                         int itemPrice = item.price;
                         // buy the item and send it to the server
                         Cart.buySomething(itemPrice);
-                        ApiCaller.postRequest(item);
+                        ApiCaller.buyRequest(item);
                         HistoryManager.addTransaction(itemId, Cart.getMoney());
                         Boolean isAllSold = ShopDataManager.takeItemFromInventory(itemId);
                         if (isAllSold) {

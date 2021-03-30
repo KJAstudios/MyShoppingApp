@@ -58,4 +58,14 @@ def post_buy():
     return jsonify({'spend': 0})
 
 
+@app.route('/login', methods=['POST'])
+def user_login():
+    print("login")
+    print(request.json)
+    username = request.json.get('username')
+    password = request.json.get('password')
+    print(username + " " + password)
+    return jsonify({"login": 1})
+
+
 app.run(port='5005', debug=True)

@@ -40,7 +40,6 @@ public class ApiCaller {
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url + "/list", new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                // load.start();
                 ArrayList<ShopData> returnData = new ArrayList<>();
                 try {
                     JSONObject reader = new JSONObject((response));
@@ -72,14 +71,13 @@ public class ApiCaller {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                // load.start();
             }
         });
         requestQueue.add(stringRequest);
     }
 
 
-    public static void postRequest(final ShopItem item) {
+    public static void buyRequest(final ShopItem item) {
         JSONObject jsonBody;
         try {
             jsonBody = new JSONObject();
@@ -100,6 +98,31 @@ public class ApiCaller {
                     });
             requestQueue.add(postRequest);
         } catch (JSONException e) {
+
+        }
+    }
+
+    public static void loginRequest(String user, String password){
+        JSONObject sendJson;
+        try{
+            sendJson = new JSONObject();
+            sendJson.put("username", user);
+            sendJson.put("password", password);
+            JsonObjectRequest postRequest = new JsonObjectRequest(url + "/login", sendJson, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+
+                }
+            },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+
+                        }
+                    });
+            requestQueue.add(postRequest);
+        }
+        catch(JSONException e){
 
         }
     }

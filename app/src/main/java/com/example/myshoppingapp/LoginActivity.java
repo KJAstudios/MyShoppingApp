@@ -18,6 +18,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        ApiCaller.init(this);
         File credentialFile = new File(getBaseContext().getFilesDir(), "credentials.txt");
         try {
             if(credentialFile.createNewFile()){
