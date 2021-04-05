@@ -1,11 +1,10 @@
 package com.example.myshoppingapp;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
-import androidx.annotation.Nullable;
-
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -23,14 +22,12 @@ import org.json.JSONObject;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 public class ApiCaller {
     private static RequestQueue requestQueue;
     private static String url = "http://10.0.2.2:5005";
 
-    public static void init(Context context){
+    public static void init(Context context) {
         requestQueue = Volley.newRequestQueue(context);
     }
 
@@ -102,27 +99,55 @@ public class ApiCaller {
         }
     }
 
-    public static void loginRequest(String user, String password){
+    /**
+     * sends a request to login or register
+     *
+     * @param user     username of request
+     * @param password password of request
+     * @param isLogin  true if logging in, false if registering
+     */
+    public static void loginRequest(String user, String password, final Boolean isLogin) {
         JSONObject sendJson;
-        try{
+        String endpoint = (isLogin ? "/login" : "/register");
+        try {
             sendJson = new JSONObject();
             sendJson.put("username", user);
             sendJson.put("password", password);
-            JsonObjectRequest postRequest = new JsonObjectRequest(url + "/login", sendJson, new Response.Listener<JSONObject>() {
+            JsonObjectRequest postRequest = new JsonObjectRequest(url + endpoint, sendJson, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
-
+                    Log.d("login response", response.toString());
+                    try {
+                        int successResponse = (int) response.get("success");
+                        final Boolean isSuccess = (successResponse == 1);
+                        Handler mainHandler = new Handler(Looper.getMainLooper());
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (isLogin) {
+                                    LoginHandler.returnLoginRequest(isSuccess);
+                                } else {
+                                    LoginHandler.returnRegisterRequest(isSuccess);
+                                }
+                            }
+                        });
+                    } catch (JSONException e) {
+                        if (isLogin){
+                        LoginHandler.returnLoginRequest(false);}
+                        else{
+                            LoginHandler.returnRegisterRequest(false);
+                        }
+                    }
                 }
             },
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-
+                            Log.d("error", error.toString());
                         }
                     });
             requestQueue.add(postRequest);
-        }
-        catch(JSONException e){
+        } catch (JSONException e) {
 
         }
     }

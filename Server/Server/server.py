@@ -4,7 +4,12 @@ from flask import Flask, jsonify, request, make_response, abort
 import os
 from scipy import misc
 
+from Server import login_handler
+
 app = Flask(__name__)
+
+
+####login_handler.load_users()
 
 
 @app.errorhandler(400)
@@ -65,7 +70,23 @@ def user_login():
     username = request.json.get('username')
     password = request.json.get('password')
     print(username + " " + password)
-    return jsonify({"login": 1})
+    if login_handler.login_check(username, password):
+        return jsonify({"success": 1})
+    else:
+        return jsonify({"success": 0})
+
+
+@app.route('/register', methods=['POST'])
+def register_user():
+    print("register")
+    print(request.json)
+    username = request.json.get('username')
+    password = request.json.get('password')
+    print(username + " " + password)
+    if login_handler.register_user(username, password):
+        return jsonify({"success": 1})
+    else:
+        return jsonify({"success": 0})
 
 
 app.run(port='5005', debug=True)

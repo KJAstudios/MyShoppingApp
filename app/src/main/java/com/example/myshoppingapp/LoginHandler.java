@@ -1,92 +1,63 @@
 package com.example.myshoppingapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.myshoppingapp.utils.FileHandler;
-
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 
 public class LoginHandler {
     private static EditText nameField;
     private static EditText passwordField;
     private static HashMap<String, String> userCredentials;
-    private static File userDB;
+
     private static Context context;
     private static int toastLength;
+    private static Intent intent;
 
-    private static void loadUsers() {
-        // create the database of user logins
-        userCredentials = new HashMap<String, String>();
-        try {
-            userCredentials = FileHandler.loadDatabase(userDB);
-        } catch (IOException e) {
-
-        }
-    }
-
-    private static void saveUsers() {
-        try {
-            FileHandler.saveDatabase(userCredentials, userDB);
-        } catch (IOException e) {
-
-        }
-    }
-
-    //Keeping this for now, just in case I need it
-    public static void startLoginHandler(EditText nameInput, EditText passwordInput, File
-            credentialFile, Context inContext) {
+    //sets up all the stuff needed for the handler to work
+    public static void startLoginHandler(EditText nameInput, EditText passwordInput,
+                                         Context inContext, Intent inIntent) {
         nameField = nameInput;
         passwordField = passwordInput;
-        userDB = credentialFile;
         context = inContext;
         toastLength = Toast.LENGTH_SHORT;
-        loadUsers();
+        intent = inIntent;
     }
 
-    public static Boolean login(View view) {
+    public static void login(View view) {
         String username = nameField.getText().toString();
         String password = passwordField.getText().toString();
-        ApiCaller.loginRequest(username, password);
-        if (userCredentials.get(username) != null) {
-            String realPass = userCredentials.get(username);
-            if (password.equals(realPass)) {
-                saveUsers();
-                return true;
-            } else {
-                Toast toast = Toast.makeText(context, "Invalid Password", toastLength);
-                toast.show();
-                return false;
-            }
-        } else {
-            Toast toast = Toast.makeText(context, "Invalid Username", toastLength);
-            toast.show();
-            return false;
-
-        }
+        ApiCaller.loginRequest(username, password, true);
     }
 
     public static void createUser(View view) {
         String username = nameField.getText().toString();
         String password = passwordField.getText().toString();
-        if (userCredentials.get(username) == null) {
-            if (!password.equals("")) {
-                userCredentials.put(username, password);
-                saveUsers();
-                Toast toast = Toast.makeText(context, "Account Created! please log in", toastLength);
-                toast.show();
-            } else {
-                Toast toast = Toast.makeText(context, "Please enter a valid password", toastLength);
-                toast.show();
-            }
+        ApiCaller.loginRequest(username, password, false);
+    }
+
+    public static void returnLoginRequest(Boolean isSuccess) {
+        if (isSuccess) {
+            Toast toast = Toast.makeText(context, "Login Successful!", toastLength);
+            toast.show();
+            intent.putExtra("User", nameField.getText().toString());
+            context.startActivity(intent);
         } else {
-            Toast toast = Toast.makeText(context, "Username already exists", toastLength);
+            Toast toast = Toast.makeText(context, "Login failed, check username and password", toastLength);
             toast.show();
         }
+    }
 
+    public static void returnRegisterRequest(Boolean isSuccess) {
+        if (isSuccess) {
+            Toast toast = Toast.makeText(context, "Account Created! You may now log in", toastLength);
+            toast.show();
+        } else {
+            Toast toast = Toast.makeText(context, "Account already exists, please log in", toastLength);
+            toast.show();
+        }
     }
 }

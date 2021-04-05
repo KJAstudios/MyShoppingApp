@@ -19,19 +19,9 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ApiCaller.init(this);
-        File credentialFile = new File(getBaseContext().getFilesDir(), "credentials.txt");
-        try {
-            if(credentialFile.createNewFile()){
-                FileWriter fileWriter = new FileWriter(credentialFile);
-                fileWriter.write("admin:adminPass");
-                fileWriter.close();
-            }
-        } catch (IOException e) {
-
-        }
         final EditText userInput = (EditText) findViewById(R.id.username_input);
-        LoginHandler.startLoginHandler(userInput, (EditText) findViewById(R.id.password_input), credentialFile, this);
         final Intent intent = new Intent(this, ScrollingActivity.class);
+        LoginHandler.startLoginHandler(userInput, (EditText) findViewById(R.id.password_input), this, intent);
         Button guestButton = findViewById(R.id.guest_login);
         guestButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -44,11 +34,8 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(LoginHandler.login(v)){
-                    intent.putExtra("User", userInput.getText().toString());
-                    startActivity(intent);
+                LoginHandler.login(v);
                 }
-            }
         });
         Button newAccountButton = findViewById(R.id.create_account);
         newAccountButton.setOnClickListener(new View.OnClickListener() {
