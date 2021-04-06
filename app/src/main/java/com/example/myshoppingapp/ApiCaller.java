@@ -132,9 +132,9 @@ public class ApiCaller {
                             }
                         });
                     } catch (JSONException e) {
-                        if (isLogin){
-                        LoginHandler.returnLoginRequest(false);}
-                        else{
+                        if (isLogin) {
+                            LoginHandler.returnLoginRequest(false);
+                        } else {
                             LoginHandler.returnRegisterRequest(false);
                         }
                     }
@@ -144,6 +144,35 @@ public class ApiCaller {
                         @Override
                         public void onErrorResponse(VolleyError error) {
                             Log.d("error", error.toString());
+                        }
+                    });
+            requestQueue.add(postRequest);
+        } catch (JSONException e) {
+
+        }
+    }
+
+    public static void featuredItemRequest(final int shopSize, final LoadShopThread loadThread) {
+        JSONObject jsonBody;
+        try {
+            jsonBody = new JSONObject();
+            jsonBody.put("size", shopSize);
+
+            JsonObjectRequest postRequest = new JsonObjectRequest(url + "/featured", jsonBody, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    try {
+                        int itemId = (int) response.get("item");
+                        loadThread.putFeaturedItemFromServer(itemId);
+                    } catch (JSONException e) {
+
+                    }
+                }
+            },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+
                         }
                     });
             requestQueue.add(postRequest);

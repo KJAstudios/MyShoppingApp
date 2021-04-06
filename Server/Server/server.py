@@ -89,4 +89,11 @@ def register_user():
         return jsonify({"success": 0})
 
 
+@app.route('/featured', methods=['POST'])
+def get_featured():
+    print("get featured")
+    shop_size = int(request.json.get('size'))
+    return jsonify({"item", random.randint(0, shop_size)})
+
+
 app.run(port='5005', debug=True)

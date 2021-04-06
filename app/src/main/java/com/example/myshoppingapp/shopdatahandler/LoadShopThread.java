@@ -32,6 +32,7 @@ public class LoadShopThread implements Runnable {
     private List<ShopData> dataArrayList = new ArrayList<>(Arrays.asList(data));
     private ShopItemDAO databaseController;
     private Boolean dataLoaded = false;
+    private int featuredItemId = 0;
 
     public LoadShopThread(ShopItemDAO databaseController) {
         this.databaseController = databaseController;
@@ -44,6 +45,8 @@ public class LoadShopThread implements Runnable {
         while (!dataLoaded) {
 
         }
+        dataLoaded = false;
+        ApiCaller.featuredItemRequest(dataArrayList.size(), this);
         boolean isBadDatabase = false;
         List<ShopItem> itemList = databaseController.getAll();
         if (itemList != null && itemList.size() == dataArrayList.size()) {
@@ -79,6 +82,7 @@ public class LoadShopThread implements Runnable {
             @Override
             public void run() {
                 ShopDataManager.setItemList(returnList);
+                ShopDataManager.setFeaturedItem(featuredItemId);
                 ShopDataManager.setLoadedSortType(SaveSortManager.loadPreference());
                 LoadManager.notifyListener();
             }
@@ -86,7 +90,13 @@ public class LoadShopThread implements Runnable {
     }
 
     public void putDataFromServer(ArrayList<ShopData> inList) {
+
         dataArrayList.addAll(inList);
+        dataLoaded = true;
+    }
+
+    public void putFeaturedItemFromServer(int featuredItemId){
+        this.featuredItemId = featuredItemId;
         dataLoaded = true;
     }
 }

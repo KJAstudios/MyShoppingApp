@@ -39,6 +39,7 @@ public class ShopDataManager {
     private static String loadedSortType;
     private static Boolean isFirstSort = true;
     private static Spinner spinner;
+    private static ShopItem featuredItem;
 
     public static void initShop(LinearLayout layout, Context context, EditText searchText, Button button, String inUser, Spinner inSpinner) {
         // parameter input/setup
@@ -256,5 +257,9 @@ public class ShopDataManager {
 
     public static void setDataViewList(List<View> viewList) {
         dataViewList = viewList;
+    }
+
+    public static void setFeaturedItem(int itemId){
+        featuredItem = itemList.get(itemId);
     }
 }
