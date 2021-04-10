@@ -47,6 +47,9 @@ public class LoadShopThread implements Runnable {
         }
         dataLoaded = false;
         ApiCaller.featuredItemRequest(dataArrayList.size(), this);
+        while (!dataLoaded) {
+
+        }
         boolean isBadDatabase = false;
         List<ShopItem> itemList = databaseController.getAll();
         if (itemList != null && itemList.size() == dataArrayList.size()) {

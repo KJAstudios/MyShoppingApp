@@ -3,7 +3,6 @@ package com.example.myshoppingapp.shopdatahandler;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -11,6 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.example.myshoppingapp.Cart;
 import com.example.myshoppingapp.R;
 import com.example.myshoppingapp.ScrollingActivity;
 import com.example.myshoppingapp.databasehandler.ShopItem;
@@ -39,7 +39,8 @@ public class ShopDataManager {
     private static String loadedSortType;
     private static Boolean isFirstSort = true;
     private static Spinner spinner;
-    private static ShopItem featuredItem;
+    private static View featuredItem;
+    private static int featuredId;
 
     public static void initShop(LinearLayout layout, Context context, EditText searchText, Button button, String inUser, Spinner inSpinner) {
         // parameter input/setup
@@ -62,15 +63,23 @@ public class ShopDataManager {
         // app will crash on first startup on new device without this, it refreshes the itemList so the view gets populated with correct image resource id
         for (ShopItem item : itemList) {
             inventory.put(item.itemID, 3);
-            View myShopItem = createShopView(inflater, item, itemLayout);
-            dataViewList.add(myShopItem);
+            if (item.itemID != featuredId) {
+                View myShopItem = createShopView(inflater, item, itemLayout);
+                dataViewList.add(myShopItem);
+            }
+
         }
         itemLayout.removeAllViews();
+        if (Cart.getMoney() >= itemList.get(featuredId).price) itemLayout.addView(featuredItem);
         for (View item : dataViewList) {
             // then add the view to the main layout
-            itemLayout.addView(item);
+            int id = Integer.parseInt(item.findViewById(R.id.nameButton).getTag().toString());
+            int price = itemList.get(id).price;
+            if (Cart.getMoney() >= price) {
+                itemLayout.addView(item);
+            }
         }
-        switch (loadedSortType){
+        switch (loadedSortType) {
             case "default sort":
                 spinner.setSelection(0);
                 break;
@@ -92,9 +101,14 @@ public class ShopDataManager {
 
     public static void displayStore() {
         itemLayout.removeAllViews();
+        if (Cart.getMoney() >= itemList.get(featuredId).price) itemLayout.addView(featuredItem);
         for (View item : dataViewList) {
             // then add the view to the main layout
-            itemLayout.addView(item);
+            int id = Integer.parseInt(item.findViewById(R.id.nameButton).getTag().toString());
+            int price = itemList.get(id).price;
+            if (Cart.getMoney() >= price) {
+                itemLayout.addView(item);
+            }
         }
     }
 
@@ -187,12 +201,19 @@ public class ShopDataManager {
 
         if (shopItems != null) {
             itemLayout.removeAllViews();
+            LinearLayout tempLayout = (LinearLayout) featuredItem.getParent();
+            if (tempLayout != null) tempLayout.removeView(featuredItem);
+            if (Cart.getMoney() >= itemList.get(featuredId).price) itemLayout.addView(featuredItem);
             for (View view : shopItems) {
                 LinearLayout parent = (LinearLayout) view.getParent();
-                if (parent != null){
+                if (parent != null) {
                     parent.removeView(view);
                 }
-                itemLayout.addView(view);
+                int id = Integer.parseInt(view.findViewById(R.id.nameButton).getTag().toString());
+                int price = itemList.get(id).price;
+                if (Cart.getMoney() >= price) {
+                    itemLayout.addView(view);
+                }
             }
         }
         if (isFirstSort) {
@@ -251,7 +272,7 @@ public class ShopDataManager {
         returnedResults = results;
     }
 
-    public static void setLoadedSortType(String sortType){
+    public static void setLoadedSortType(String sortType) {
         loadedSortType = sortType;
     }
 
@@ -259,7 +280,35 @@ public class ShopDataManager {
         dataViewList = viewList;
     }
 
-    public static void setFeaturedItem(int itemId){
-        featuredItem = itemList.get(itemId);
+    public static void setFeaturedItem(int itemId) {
+        final ShopItem item = itemList.get(itemId);
+        featuredId = itemId;
+
+        LayoutInflater inflater = LayoutInflater.from(managerContext);
+
+        View myShopItem = inflater.inflate(R.layout.featured_shop_item, null);
+        View.OnClickListener clickListener = new View.OnClickListener() {
+
+
+            @Override
+            public void onClick(View v) {
+                ScrollingActivity.confirmPurchaseDialog.show();
+                ScrollingActivity.confirmPurchaseDialog.SetDetails(item, itemLayout);
+            }
+        };
+        // set info for the item
+        Button nameButton = myShopItem.findViewById(R.id.nameButton);
+        nameButton.setText(item.itemName);
+        nameButton.setTag(item.itemID);
+        nameButton.setOnClickListener(clickListener);
+        Button costButton = myShopItem.findViewById(R.id.costButton);
+        costButton.setText("$" + item.price);
+        costButton.setOnClickListener(clickListener);
+        ImageButton imageButton = myShopItem.findViewById(R.id.imageButton2);
+        imageButton.setImageResource(item.image);
+        imageButton.setOnClickListener(clickListener);
+        Button featuredButton = myShopItem.findViewById(R.id.featured_item);
+        featuredButton.setOnClickListener(clickListener);
+        featuredItem = myShopItem;
     }
 }

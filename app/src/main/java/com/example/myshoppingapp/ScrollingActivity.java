@@ -174,7 +174,7 @@ public class ScrollingActivity extends AppCompatActivity {
 
         if (id == R.id.add_money) {
             Cart.AddMoney(10);
-
+            ShopDataManager.displayStore();
             return true;
         }
 

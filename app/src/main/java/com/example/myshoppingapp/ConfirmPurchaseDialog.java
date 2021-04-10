@@ -79,6 +79,7 @@ public class ConfirmPurchaseDialog extends Dialog {
                     }
                 }
                 dismiss();
+                ShopDataManager.displayStore();
             }
         });
     }

@@ -1,8 +1,8 @@
 # https://blog.miguelgrinberg.com/post/designing-a-restful-api-with-python-and-flask
 
+import random
+
 from flask import Flask, jsonify, request, make_response, abort
-import os
-from scipy import misc
 
 from Server import login_handler
 
@@ -93,7 +93,7 @@ def register_user():
 def get_featured():
     print("get featured")
     shop_size = int(request.json.get('size'))
-    return jsonify({"item", random.randint(0, shop_size)})
+    return jsonify({"item": random.randint(0, shop_size)})
 
 
 app.run(port='5005', debug=True)
