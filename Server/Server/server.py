@@ -3,7 +3,6 @@
 import random
 
 from flask import Flask, jsonify, request, make_response, abort
-
 from Server import login_handler
 
 app = Flask(__name__)
@@ -93,7 +92,7 @@ def register_user():
 def get_featured():
     print("get featured")
     shop_size = int(request.json.get('size'))
-    return jsonify({"item": random.randint(0, shop_size)})
+    return jsonify({"item": random.randint(0, shop_size-1)})
 
 
 app.run(port='5005', debug=True)

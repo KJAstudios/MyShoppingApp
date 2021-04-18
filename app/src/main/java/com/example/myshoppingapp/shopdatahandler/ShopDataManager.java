@@ -10,7 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.example.myshoppingapp.Cart;
+import com.example.myshoppingapp.CashHandler;
 import com.example.myshoppingapp.R;
 import com.example.myshoppingapp.ScrollingActivity;
 import com.example.myshoppingapp.databasehandler.ShopItem;
@@ -70,12 +70,12 @@ public class ShopDataManager {
 
         }
         itemLayout.removeAllViews();
-        if (Cart.getMoney() >= itemList.get(featuredId).price) itemLayout.addView(featuredItem);
+        if (CashHandler.getMoney() >= itemList.get(featuredId).price) itemLayout.addView(featuredItem);
         for (View item : dataViewList) {
             // then add the view to the main layout
             int id = Integer.parseInt(item.findViewById(R.id.nameButton).getTag().toString());
             int price = itemList.get(id).price;
-            if (Cart.getMoney() >= price) {
+            if (CashHandler.getMoney() >= price) {
                 itemLayout.addView(item);
             }
         }
@@ -101,12 +101,12 @@ public class ShopDataManager {
 
     public static void displayStore() {
         itemLayout.removeAllViews();
-        if (Cart.getMoney() >= itemList.get(featuredId).price) itemLayout.addView(featuredItem);
+        if (CashHandler.getMoney() >= itemList.get(featuredId).price) itemLayout.addView(featuredItem);
         for (View item : dataViewList) {
             // then add the view to the main layout
             int id = Integer.parseInt(item.findViewById(R.id.nameButton).getTag().toString());
             int price = itemList.get(id).price;
-            if (Cart.getMoney() >= price) {
+            if (CashHandler.getMoney() >= price) {
                 itemLayout.addView(item);
             }
         }
@@ -203,7 +203,7 @@ public class ShopDataManager {
             itemLayout.removeAllViews();
             LinearLayout tempLayout = (LinearLayout) featuredItem.getParent();
             if (tempLayout != null) tempLayout.removeView(featuredItem);
-            if (Cart.getMoney() >= itemList.get(featuredId).price) itemLayout.addView(featuredItem);
+            if (CashHandler.getMoney() >= itemList.get(featuredId).price) itemLayout.addView(featuredItem);
             for (View view : shopItems) {
                 LinearLayout parent = (LinearLayout) view.getParent();
                 if (parent != null) {
@@ -211,7 +211,7 @@ public class ShopDataManager {
                 }
                 int id = Integer.parseInt(view.findViewById(R.id.nameButton).getTag().toString());
                 int price = itemList.get(id).price;
-                if (Cart.getMoney() >= price) {
+                if (CashHandler.getMoney() >= price) {
                     itemLayout.addView(view);
                 }
             }

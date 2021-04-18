@@ -2,13 +2,7 @@ package com.example.myshoppingapp.utils;
 
 import android.widget.TextView;
 
-import com.example.myshoppingapp.Cart;
-
-import org.w3c.dom.Text;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import com.example.myshoppingapp.CashHandler;
 
 public class MoneyUpdateListener {
     private static MoneyUpdateListener moneyUpdateListener;
@@ -29,7 +23,7 @@ public class MoneyUpdateListener {
     }
 
     public void updateMoney(){
-        moneyText.setText("$" + Cart.getMoney());
+        moneyText.setText("$" + CashHandler.getMoney());
     }
 
     private void loadMoney(String user){

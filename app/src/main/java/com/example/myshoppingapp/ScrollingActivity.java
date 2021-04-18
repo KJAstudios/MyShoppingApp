@@ -3,7 +3,6 @@ package com.example.myshoppingapp;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,12 +19,6 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.example.myshoppingapp.databasehandler.ItemDaoThreadWrapper;
 import com.example.myshoppingapp.databasehandler.ItemDatabase;
 import com.example.myshoppingapp.databasehandler.ShopItemDAO;
@@ -42,7 +35,6 @@ import com.example.myshoppingapp.utils.SortSpinnerController;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.zip.Inflater;
 
 public class ScrollingActivity extends AppCompatActivity {
     public static ConfirmPurchaseDialog confirmPurchaseDialog = null;
@@ -79,7 +71,7 @@ public class ScrollingActivity extends AppCompatActivity {
         }
 
         //make sure the history file for the user exists
-        File historyFile = new File(getBaseContext().getFilesDir(), curUser+".txt");
+        File historyFile = new File(getBaseContext().getFilesDir(), curUser + ".txt");
         try {
             if (historyFile.createNewFile()) {
                 FileWriter fileWriter = new FileWriter(historyFile);
@@ -121,8 +113,8 @@ public class ScrollingActivity extends AppCompatActivity {
 
 
         // init the cart and set the starting money for the user
-        Cart.InitCart(curUser, moneyFile);
-        curMoney.setText("$" + Cart.getMoney());
+        CashHandler.InitCash(curUser, moneyFile);
+        curMoney.setText("$" + CashHandler.getMoney());
 
         //init the history manager to keep track of transactions
         HistoryManager.Init(historyFile, context, mainLayout);
@@ -132,7 +124,7 @@ public class ScrollingActivity extends AppCompatActivity {
         searchBar.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH){
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                     ShopDataManager.searchShopItems(context, shopItemDAO);
                 }
                 return false;
@@ -148,12 +140,10 @@ public class ScrollingActivity extends AppCompatActivity {
         });
 
 
-
         //now that everything is created, now send it over to the ShopDataLoadingScreen to display the data
         ShopDataLoadingScreen shopDataLoadingScreen = new ShopDataLoadingScreen(shopItemDAO, mainLayout, LayoutInflater.from(this));
 
     }
-
 
 
     @Override
@@ -173,17 +163,17 @@ public class ScrollingActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.add_money) {
-            Cart.AddMoney(10);
+            CashHandler.AddMoney(10);
             ShopDataManager.displayStore();
             return true;
         }
 
-        if (id == R.id.view_history){
+        if (id == R.id.view_history) {
             HistoryLoadingScreen loadingScreen = new HistoryLoadingScreen(HistoryManager.getHistoryFile(), shopItemDAO, mainLayout, LayoutInflater.from(this));
 
             return true;
         }
-        if (id == R.id.view_store){
+        if (id == R.id.view_store) {
             ShopDataManager.displayStore();
 
             return true;
@@ -191,7 +181,7 @@ public class ScrollingActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.logout) {
             HistoryManager.saveHistory();
-            Cart.shutdownCart(new File(getBaseContext().getFilesDir(), "money.txt"));
+            CashHandler.shutdownCash(new File(getBaseContext().getFilesDir(), "money.txt"));
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
             return true;
@@ -200,16 +190,15 @@ public class ScrollingActivity extends AppCompatActivity {
     }
 
 
-
     private void updateMoney() {
         TextView curMoney = findViewById(R.id.cur_money);
-        curMoney.setText("$" + Cart.getMoney());
+        curMoney.setText("$" + CashHandler.getMoney());
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Cart.shutdownCart(new File(getBaseContext().getFilesDir(), "money.txt"));
+        CashHandler.shutdownCash(new File(getBaseContext().getFilesDir(), "money.txt"));
         HistoryManager.saveHistory();
     }
 }

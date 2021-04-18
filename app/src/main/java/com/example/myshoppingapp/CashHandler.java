@@ -7,14 +7,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
-public class Cart {
+public class CashHandler {
     private static int money = 0;
     private static String curUser;
     private static MoneyUpdateListener moneyUpdateListener;
     private static HashMap<String, String> moneyDatabase;
     private static File dbFile;
 
-    public static void InitCart(String user, File file) {
+    public static void InitCash(String user, File file) {
         curUser = user;
         dbFile = file;
         moneyUpdateListener = MoneyUpdateListener.getInstance();
@@ -26,6 +26,7 @@ public class Cart {
         loadUserMoney();
 
     }
+
 
     public static void AddMoney(int cents) {
         money += cents;
@@ -43,7 +44,7 @@ public class Cart {
         return money;
     }
 
-    public static void shutdownCart(File file) {
+    public static void shutdownCash(File file) {
         try {
             FileHandler.saveDatabase(moneyDatabase, file);
         } catch (IOException e) {

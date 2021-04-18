@@ -53,7 +53,7 @@ public class HistoryManager {
             imageButton.setImageResource(item.image);
             Button nameButton = historyItemView.findViewById(R.id.nameButton);
             nameButton.setText(item.itemName);
-            Button costButton = historyItemView.findViewById(R.id.historyCostButton);
+            Button costButton = historyItemView.findViewById(R.id.cartCostButton);
             costButton.setText("-$"+item.price);
             Button balButton = historyItemView.findViewById(R.id.remainingBalanceButton);
             balButton.setText("$" + historyObject.balance);
