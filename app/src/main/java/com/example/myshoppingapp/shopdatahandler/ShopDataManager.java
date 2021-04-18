@@ -258,7 +258,7 @@ public class ShopDataManager {
         Button costButton = myShopItem.findViewById(R.id.costButton);
         costButton.setText("$" + item.price);
         costButton.setOnClickListener(clickListener);
-        ImageButton imageButton = myShopItem.findViewById(R.id.imageButton2);
+        ImageButton imageButton = myShopItem.findViewById(R.id.cartItemImage);
         imageButton.setImageResource(item.image);
         imageButton.setOnClickListener(clickListener);
         return myShopItem;
@@ -304,11 +304,15 @@ public class ShopDataManager {
         Button costButton = myShopItem.findViewById(R.id.costButton);
         costButton.setText("$" + item.price);
         costButton.setOnClickListener(clickListener);
-        ImageButton imageButton = myShopItem.findViewById(R.id.imageButton2);
+        ImageButton imageButton = myShopItem.findViewById(R.id.cartItemImage);
         imageButton.setImageResource(item.image);
         imageButton.setOnClickListener(clickListener);
         Button featuredButton = myShopItem.findViewById(R.id.featured_item);
         featuredButton.setOnClickListener(clickListener);
         featuredItem = myShopItem;
+    }
+
+    public static ShopItem getShopItem(int itemId){
+        return itemList.get(itemId);
     }
 }

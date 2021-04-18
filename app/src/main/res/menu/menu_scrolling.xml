@@ -18,6 +18,11 @@
         android:tooltipText=""
         app:showAsAction="withText" />
     <item
+        android:id="@+id/view_cart"
+        android:title="View Cart"
+        android:tooltipText=""
+        app:showAsAction="withText" />
+    <item
         android:id="@+id/logout"
         android:orderInCategory="100"
         android:title="@string/action_settings"

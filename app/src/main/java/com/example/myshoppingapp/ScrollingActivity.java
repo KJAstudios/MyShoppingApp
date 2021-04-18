@@ -19,6 +19,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.example.myshoppingapp.carthandler.CartHandler;
 import com.example.myshoppingapp.databasehandler.ItemDaoThreadWrapper;
 import com.example.myshoppingapp.databasehandler.ItemDatabase;
 import com.example.myshoppingapp.databasehandler.ShopItemDAO;
@@ -139,6 +140,7 @@ public class ScrollingActivity extends AppCompatActivity {
             }
         });
 
+        CartHandler.initCart(this);
 
         //now that everything is created, now send it over to the ShopDataLoadingScreen to display the data
         ShopDataLoadingScreen shopDataLoadingScreen = new ShopDataLoadingScreen(shopItemDAO, mainLayout, LayoutInflater.from(this));
@@ -176,6 +178,10 @@ public class ScrollingActivity extends AppCompatActivity {
         if (id == R.id.view_store) {
             ShopDataManager.displayStore();
 
+            return true;
+        }
+        if (id == R.id.view_cart) {
+            CartHandler.displayCart(LayoutInflater.from(this));
             return true;
         }
         //noinspection SimplifiableIfStatement

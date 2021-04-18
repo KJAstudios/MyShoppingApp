@@ -49,7 +49,7 @@ public class HistoryManager {
         for (HistoryObject historyObject: historyObjects){
             ShopItem item = historyObject.item;
             View historyItemView = inflater.inflate(R.layout.history_item, null);
-            ImageButton imageButton = historyItemView.findViewById(R.id.imageButton2);
+            ImageButton imageButton = historyItemView.findViewById(R.id.cartItemImage);
             imageButton.setImageResource(item.image);
             Button nameButton = historyItemView.findViewById(R.id.nameButton);
             nameButton.setText(item.itemName);
